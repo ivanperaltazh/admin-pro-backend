@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-client_id" content="743209552463-g2q2shdr8rtbru8uuuo7q6oi2roljnil.apps.googleusercontent.com">
+    <title>Demo Login</title>
+</head>
+<body>
+
+    <h1>Google Sign-in</h1>
+
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <a href="#" onclick="signOut();">Sign out</a>
+
+    <script>
+
+        //Estas datos nos se utilizan en el backend, porque el usuario podria modificarlos es solo para verlo en el front
+        // por seguridad se usa el Token
+// Si no funcionara y dierra error a pesar de haber guardodo la URI (http://localhost:3000/) de origen en Google, limpiar cache de navegar y volver a cargar pagina
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+            console.log('Name: ' + profile.getName());
+            console.log('Image URL: ' + profile.getImageUrl());
+            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+            // Token que enviaremso al backend:
+            var id_token = googleUser.getAuthResponse().id_token;
+            
+            // Imprimimos el googleToken , token de google que sirve solo para autenticarnos
+            console.log('Token: ', id_token);
+          }
+
+          // Cerrar sesión
+          function signOut() {
+                var auth2 = gapi.auth2.getAuthInstance();
+                auth2.signOut().then(function () {
+                console.log('User signed out.');
+                });
+            }
+    </script>
+
+</body>
+</html>

@@ -27,6 +27,9 @@ dbConnection();
 //Instalado dotenv, podemos imprimir variables de entorno de Node
 // console.log(process.env); 
 
+// Directorio Publico
+app.use(express.static('public'));
+
 
 // Rutas
 app.use('/api/usuarios', require('./routes/usuarios-routes')); // use(): Funcion intermedia o Middleware
