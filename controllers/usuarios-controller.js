@@ -12,14 +12,40 @@ const { generarJWT } = require('../helpers/jwt');
 //req -> solicitud; res -> respuesta del servidor
 const getUsuarios = async (req, res) => {
 
-    // Usuario.find() -> trae todos los datos de usurio pero dentro se pueden poner filtros de datos q queremos:
-    const usuarios = await Usuario.find({}, 'nombre email role google');
+    const desde = Number(req.query.desde) || 0;
+    const numeroRegistros = Number(req.query.numero) || 5;
+    console.log(desde);
 
+    /*
+    // Usuario.find() -> trae todos los datos de usurio pero dentro se pueden poner filtros de datos q queremos
+    //.skip()->esto se salta registros devolviendo desde paginacion solicitada*
+    //limit() esto es de cuantos en cuantos
+    const usuarios = await Usuario.find({}, 'nombre email role google')
+                                   .skip(desde) 
+                                   .limit(numeroRegistros);   
+    
+    const total = await Usuario.count();
+    */
+
+
+    // Para no usar el await  en las dos funciones anteriores ya que esto ralentizaria 
+    // la APP usamos el Promise.all(). Lo que ejecuta las promesas de forma simultanea y 
+    // extraemos los datos usando desestructuracion:  [usuarios, total] = Promise.all(...
+    // PAGINACION:
+     [usuarios, total] = await Promise.all([
+        Usuario.find({}, 'nombre email role google img')
+               .skip(desde) 
+               .limit(numeroRegistros), 
+
+               Usuario.estimatedDocumentCount()
+    ])
+    
     // uid: req.uid -> es la uid del usuario que hace la peticion
     res.json({
         ok: true,
         usuarios,
-        uid: req.uid 
+        uid: req.uid,
+        total 
     });
 }
 
