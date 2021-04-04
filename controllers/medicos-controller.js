@@ -1,4 +1,5 @@
 const Medico = require('../models/medico');
+const Hospital = require('../models/hospital');
 
 
 const  {response} = require('express');
@@ -42,18 +43,81 @@ const crearMedico = async (req, res=response) =>{
 }
 
 
-const actualizaMedico = (req, res=response) =>{
-    res.json({
-        ok:true,
-        msg:'actualizaMedico'
-    });
+const actualizaMedico = async (req, res=response) => {
+
+    const id = req.params.id; // id medico
+    const uid = req.uid; // dispondo del uid del usuario por la autenticacion de JWT
+    const idHospital = req.body.hospital;
+
+    try {
+        const medico = await Medico.findById(id);
+        if(!medico){
+            return res.status(404).json({
+                ok:true,
+               msg:'Medico no encontrado por id'
+            });
+        }
+
+        const hospitalDB = await Hospital.findById(idHospital);
+        if(!hospitalDB){
+            return res.status(404).json({
+                ok:true,
+               msg:'Hospital no encontrado por id'
+            });
+        }
+
+        // Mejor actualizar asi que es mejor cuando hay varios campos
+        const cambiosMedico = {
+            ...req.body,
+            usuario:uid,
+            hospital:idHospital
+        }
+      //  {new:true} -> Instruccion para que retorne ultimo cambio actualizado
+    const medicoActualizado = await Medico.findByIdAndUpdate(id, cambiosMedico, {new:true});
+
+        res.json({
+            ok:true,
+            medico : medicoActualizado
+        });
+        
+    } catch (error) {
+        console.log(error);
+
+        res.json({
+            ok:false,
+            msg:'hable con el admistrador'
+        });       
+    }
 }
 
-const borrarMedico = (req, res=response) =>{
-    res.json({
-        ok:true,
-        msg:'borrarMedico'
-    });
+const borrarMedico = async (req, res=response) =>{
+    const id = req.params.id;
+
+    try {
+        const medico = await Medico.findById(id);
+        if(!medico){
+            return res.status(404).json({
+                ok:true,
+               msg:'Medico no encontrado por id'
+            });
+        }
+     
+        //Borramos hospital:
+        await Medico.findByIdAndDelete(id);
+
+        res.json({
+            ok:true,
+            msg:'Medico eliminado'
+        });
+        
+    } catch (error) {
+        console.log(error);
+
+        res.json({
+            ok:false,
+            msg:'hable con el admistrador'
+        })  
+    }
 }
 
 module.exports = {
