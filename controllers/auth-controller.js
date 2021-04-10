@@ -5,6 +5,8 @@ const { generarJWT } = require("../helpers/jwt");
 const { googleVerify } = require("../helpers/google-verify");
 
 
+// Retorna un token JWT construido con la uid del usuario. Luego de verificar 
+  //usuario y contraseña
 const login = async (req, res = response) => {
 
     const { email, password } = req.body;
@@ -73,16 +75,19 @@ const googleSignIn = async (req, res=response) => {
                pasword:'@@@',
                img:picture,
                google:true,
+
+           // Borramos su pasword si queremos que solo se autentique por google
+           // si no la borramos tendra dos modos de autenticarse
+           // usuario.password = '@@@'; // barramos su password poniendo cualquier cosa
+       
         });
        } else {
            // Si existe el usuario
            usuario = usuarioDB;
            usuario.google = true;
 
-           // Borramos su pasword si queremos que solo se autentique por google
-           // si no la borramos tendra dos modos de autenticarse
-           // usuario.password = '@@@'; // barramos su password poniendo cualquier cosa
-       }
+          
+        }
 
        // Guardamos moficicaciones en base de datos:
         await  usuario.save();
@@ -116,9 +121,12 @@ const renewToken = async (req, res=responso) => {
     //Generamos JWT (Json web token) con el id del usuario:
     const token = await generarJWT(uid);
 
+     // Obtengo la instncia del usuario
+     const usuario = await Usuario.findById(uid);
+
     res.json({
         ok:true,
-        uid,
+        usuario,
         token
     });
 }
