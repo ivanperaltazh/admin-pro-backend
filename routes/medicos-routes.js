@@ -12,7 +12,8 @@ const {
             getMedicos,
             crearMedico,
             actualizaMedico,
-            borrarMedico
+            borrarMedico,
+            getMedicoById
      } = require('../controllers/medicos-controller')
 
 
@@ -21,9 +22,7 @@ const router = Router();
 // Rutas, -> llama al controlador, que se ha separdo de aqui para hacerlo mas entendible
   //check() : validar campos
   //validarJWT -> todas las rutas que tenga este middleware estan protegidas por validacion de usuario
-router.get('/', 
-    getMedicos
-); 
+router.get('/',   validarJWT, getMedicos ); 
 
 router.post('/',
 [
@@ -49,6 +48,11 @@ actualizaMedico);
 router.delete('/:id',
  validarJWT,
  borrarMedico
+ );
+
+ router.get('/:id',
+ validarJWT,
+ getMedicoById
  );
 
 module.exports = router;

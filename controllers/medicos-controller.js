@@ -14,6 +14,30 @@ const getMedicos = async (req, res=response) =>{
     });
 }
 
+
+const getMedicoById = async (req, res=response) =>{
+    const id = req.params.id; // id medico
+
+    try {  
+        const medico = await Medico.findById(id)
+                        .populate('usuario', 'nombre img')
+                        .populate('hospital', 'nombre img');
+        res.json({
+        ok:true,
+        medico
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.json({
+            ok:true,
+            msg: 'Hable con el administrador'
+            });
+    }
+}
+
+
+
 const crearMedico = async (req, res=response) =>{
 
     const uid = req.uid; // es el uid que viene en el token.
@@ -124,5 +148,6 @@ module.exports = {
     getMedicos,
     crearMedico,
     actualizaMedico,
-    borrarMedico
+    borrarMedico,
+    getMedicoById
 }
