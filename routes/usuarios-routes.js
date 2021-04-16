@@ -6,7 +6,7 @@ const {Router} = require('express');
 const {check} = require('express-validator');
 const {validarCampos} = require('../middlewares/validar-campos');
 const {getUsuarios, crearUsuario, actualizarUsuario, borrarUsuario} = require('../controllers/usuarios-controller');
-const { validarJWT } = require('../middlewares/validar-jwt');
+const { validarJWT, validarADMIN_ROLE, validarADMIN_ROLE_o_MismoUsuario} = require('../middlewares/validar-jwt');
 const router = Router();
 
 // Rutas, -> llama al controlador, que se ha separdo de aqui para hacerlo mas entendible
@@ -26,7 +26,8 @@ crearUsuario
 
 
 router.put('/:id',
-[
+[  validarJWT,
+   validarADMIN_ROLE_o_MismoUsuario, // validamos si es ADMIN_ROL  o el mismo usuario para que pueda editar su perfil
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('email', 'El email es obligatorio').isEmail(), 
     check('role', 'El rol es obligatorio').not().isEmpty(),
@@ -35,7 +36,7 @@ router.put('/:id',
 actualizarUsuario);
   
 
-router.delete('/:id', validarJWT, borrarUsuario);
+router.delete('/:id', [validarJWT, validarADMIN_ROLE], borrarUsuario);
 
 
 module.exports = router;
