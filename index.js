@@ -4,6 +4,10 @@ const cors = require('cors')
 
 // para poder leer archicos tipo .env instalamos dotenv  con:  npm i dotenv
 require('dotenv').config(); // con esto leemos variable de entorno
+
+// Esto se usa cuando se despliega en el en servidor, no se importa de ningun sitio biene ya en Node:
+const path = require('path');
+
 const { dbConnection } = require('./database/config');
 
 
@@ -38,6 +42,15 @@ app.use('/api/medicos', require('./routes/medicos-routes'));
 app.use('/api/login', require('./routes/auth-routes'));
 app.use('/api/todo', require('./routes/busquedas-routes'));
 app.use('/api/upload', require('./routes/uploads-routes'));
+
+
+// Esta ruta se usa cuando se despliega en el servidor sobre todo (aunque tambien localmente)
+// he indica que si no es ninguna de las ruatas anteriores se responde con el path de index de Angular
+// que luego de hacer build --prod se abra colocado en carpeta public del este back,
+// de este modo el codigo de angular tendra el control de las rutas:
+  app.get('*', (req, res) =>{
+     res.sendFile(path.resolve(__dirname,'public/index.html'));
+  })
 
 
 //Levantar la app process.env.PORT -> pasamos el puerto definido en ".env"
